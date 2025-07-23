@@ -1,74 +1,90 @@
-import { notFound } from "next/navigation";
-import Navbar from "@/components/Navbar";
+"use client";
+import { useEffect, useState } from "react";
+import { useParams } from "next/navigation";
 import Footer from "@/components/Footer";
 import Button from "@/components/Button";
-// import { products } from "@/lib/mockData";
-// import QuantitySelector from "../../../components/QuantitySelector";
-// import { useCart } from "../../../context/cartContext";
-// import Image from "next/image";
-const products = [
-    {
-        title: "Dining Table",
-        price: "$599",
-        image: "/images/table.jpg",
-        slug: "table",
-        description: "",
-    },
-    {
-        title: "Leather Armchair",
-        price: "$349",
-        image: "/images/armchair.jpg",
-        slug: "Leather",
-        description: "",
-    },
-    {
-        title: "Bookshelf",
-        price: "$259",
-        image: "/images/bookshelf.jpg",
-        slug: "Bookshelf",
-        description: "",
-    },
-    {
-        title: "Bed Frame",
-        price: "$699",
-        image: "/images/bed.jpg",
-        slug: "Frame",
-        description: "",
-    },
-    {
-        title: "Coffee Table",
-        price: "$149",
-        image: "/images/coffeetable.jpg",
-        description: "",
+import { useCart } from "@/context/cartContext";
+import QuantitySelector from "@/components/QuantitySelector";
+import Image from "next/image";
 
-        slug: "Coffee",
-    },
-    {
-        title: "Wardrobe",
-        price: "$799",
-        image: "/images/wardrobe.jpg",
-        description: "",
+interface Product {
+    id: number;
+    title: string;
+    slug: string;
+    price: string;
+    image: string;
+    description: string;
+}
 
-        slug: "Wardrobe",
-    },
-];
-export default function ProductPage({ params }: { params: { slug: string } }) {
-    const product = products.find((p) => p.slug === params.slug);
+const ProductDetailsPage = () => {
+    const { slug } = useParams();
+    const [product, setProduct] = useState<Product | null>(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+    const [quantity, setQuantity] = useState(1);
+    const { dispatch } = useCart();
 
-    if (!product) {
-        return notFound();
-    }
+    useEffect(() => {
+        const fetchProduct = async () => {
+            try {
+                const response = await fetch(`/api/products/${slug}`);
+                if (!response.ok) {
+                    throw new Error("Product not found");
+                }
+                const data = await response.json();
+                setProduct(data);
+            } catch (err) {
+                setError(
+                    err instanceof Error
+                        ? err.message
+                        : "Failed to load product"
+                );
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchProduct();
+    }, [slug]);
+
+    const handleAddToCart = () => {
+        if (!product) return;
+        for (let i = 0; i < quantity; i++) {
+            dispatch({ type: "ADD_ITEM", payload: product });
+        }
+    };
+
+    if (loading)
+        return (
+            <div className="min-h-screen flex items-center justify-center">
+                Loading...
+            </div>
+        );
+    if (error)
+        return (
+            <div className="min-h-screen flex items-center justify-center text-red-500">
+                Error: {error}
+            </div>
+        );
+    if (!product)
+        return (
+            <div className="min-h-screen flex items-center justify-center">
+                Product not found
+            </div>
+        );
 
     return (
         <div className="min-h-screen flex flex-col">
-            <Navbar />
             <main className="flex-1 max-w-5xl mx-auto px-6 py-12">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-                    {/* <Image
-                        src={product.image}
-                        alt={product.title}
-                        className="w-full rounded-lg shadow-md"
-                    /> */}
+                    <div className="relative aspect-square">
+                        <Image
+                            src={product.image}
+                            alt={product.title}
+                            fill
+                            className="object-cover rounded-lg"
+                        />
+                    </div>
                     <div>
                         <h1 className="text-3xl font-bold mb-4">
                             {product.title}
@@ -79,11 +95,24 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
                         <p className="text-gray-600 mb-6">
                             {product.description}
                         </p>
-                        <Button>Add to Cart</Button>
+
+                        <div className="mb-4">
+                            <QuantitySelector
+                                quantity={quantity}
+                                onIncrement={() => setQuantity(quantity + 1)}
+                                onDecrement={() =>
+                                    setQuantity(Math.max(1, quantity - 1))
+                                }
+                            />
+                        </div>
+
+                        <Button onClick={handleAddToCart}>Add to Cart</Button>
                     </div>
                 </div>
             </main>
             <Footer />
         </div>
     );
-}
+};
+
+export default ProductDetailsPage;

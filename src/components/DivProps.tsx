@@ -1,6 +1,7 @@
 "use client";
+import React, { useRef } from "react";
 
-import { motion, Variants, MotionProps } from "framer-motion";
+import { motion, Variants, MotionProps, useInView } from "framer-motion";
 import { ReactNode } from "react";
 
 interface DivProps extends MotionProps {
@@ -9,24 +10,20 @@ interface DivProps extends MotionProps {
     visible?: Variants;
 }
 
-export default function Div({
-    initial,
-    animate,
-    hidden,
-    visible = {
-        transition: {
-            staggerChildren: 0.2,
-        },
-    },
-    children,
-}: DivProps) {
+export default function ContainerMotion({ children }) {
+    const ref = useRef(null);
+    const isInView = useInView(ref, { once: true });
     return (
         <motion.div
-            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
-            initial={initial}
-            animate={animate}
-            variants={visible}
+            initial={{ filter: "blur(20px)", opacity: 0 }}
+            animate={isInView ? { filter: "blur(0px)", opacity: 1 } : {}}
+            transition={{
+                duration: 0.5,
+                ease: "easeInOut",
+            }}
+            className="text-2xl font-bold mb-6 text-center"
         >
+            text
             {children}
         </motion.div>
     );

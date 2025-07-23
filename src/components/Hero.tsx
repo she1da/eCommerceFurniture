@@ -1,6 +1,7 @@
 "use client";
 import React from "react";
 import Image from "next/image";
+import Link from "next/link";
 
 type HeroProps = {
     title: string;
@@ -21,9 +22,16 @@ const Hero: React.FC<HeroProps> = ({ title, subtitle, image }) => {
             <div className="relative text-center z-10">
                 <h1 className="text-4xl font-bold mb-4 text-black">{title}</h1>
                 <p className="text-lg text-gray-700 mb-6">{subtitle}</p>
-                <button className="bg-black text-white px-6 py-2 rounded-md hover:bg-gray-800">
+                {/* <button className="bg-black text-white px-6 py-2 rounded-md hover:bg-gray-800">
                     Shop Now
-                </button>
+                </button> */}
+
+                <Link
+                    href="/shop"
+                    className="bg-black text-white px-6 py-2 rounded-md hover:bg-gray-800"
+                >
+                    Shop
+                </Link>
             </div>
         </section>
     );

@@ -1,0 +1,40 @@
+{
+  "products": [
+    {
+      "id": "1",
+      "name": "wooden-chair",
+      "price": 99.99,
+      "description": "Comfortable wooden chair",
+      "image": "/image 4.jpg"
+    },
+    {
+      "id": "2",
+      "name": "Leather Sofa",
+      "price": 499.99,
+      "description": "Luxurious leather sofa",
+      "image": "/image 2.jpg"
+    },
+    {
+      "id": "3",
+      "name": "Leather Sofa",
+      "price": 499.99,
+      "description": "Luxurious leather sofa",
+      "image": "/image 3.jpg"
+    }
+  ],
+  "users": [
+    {
+      "id": "1",
+      "email": "user@example.com",
+      "name": "John Doe",
+      "token": "mock-token-123"
+    }
+  ],
+  "carts": [
+    {
+      "userId": 1,
+      "items": [],
+      "id": "1"
+    }
+  ]
+}

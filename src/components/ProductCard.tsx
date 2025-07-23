@@ -1,33 +1,41 @@
 "use client";
-
-import React from "react";
+import { useRouter } from "next/navigation";
 import Image from "next/image";
-import Link from "next/link";
 
-type Product = {
+interface ProductCardProps {
+    id: number;
     title: string;
     price: string;
     image: string;
     slug: string;
-};
+}
 
-const ProductCard: React.FC<Product> = ({ title, price, image, slug }) => {
+const ProductCard: React.FC<ProductCardProps> = ({
+    id,
+    title,
+    price,
+    image,
+    slug,
+}) => {
+    const router = useRouter();
+
+    const handleClick = () => {
+        router.push(`/products/${slug}`);
+    };
+
     return (
-        <Link href={`/product/${slug}`}>
-            <div className="cursor-pointer p-4 rounded-lg shadow hover:shadow-md transition-all">
-                <div className="relative w-full h-64 mb-4">
-                    <Image
-                        src={image}
-                        alt={title}
-                        layout="fill"
-                        objectFit="cover"
-                        className="rounded-md"
-                    />
-                </div>
-                <h3 className="text-lg font-semibold">{title}</h3>
-                <p className="text-gray-700">{price}</p>
+        <div
+            className="border rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow cursor-pointer"
+            onClick={handleClick}
+        >
+            <div className="relative h-48">
+                <Image src={image} alt={title} fill className="object-cover" />
             </div>
-        </Link>
+            <div className="p-4">
+                <h3 className="font-medium text-lg">{title}</h3>
+                <p className="text-gray-600">{price}</p>
+            </div>
+        </div>
     );
 };
 
